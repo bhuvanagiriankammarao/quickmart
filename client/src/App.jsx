@@ -8,8 +8,8 @@ function App() {
 
   return (
     <>
-        <h1 className="text-3xl font-bold underline">
-      Hello world!EFRGT
+        <h1 className=" font-poppins text-black  text-custom-16 font-500">
+      Hello ankamrao
     </h1>
     </>
   )
