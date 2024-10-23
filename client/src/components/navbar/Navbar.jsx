@@ -2,6 +2,7 @@
 import React from "react";
 
 
+
 // Import the logo from the assets/images folder
 import logo from "../../assets/images/logo.png";
 import { FaSearch, FaUserCircle, FaHeart, FaShoppingCart } from "react-icons/fa";
