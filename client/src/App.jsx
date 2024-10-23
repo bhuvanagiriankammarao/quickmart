@@ -1,18 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import Navbar from "./components/navbar/Navbar";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-        <h1 className=" font-poppins text-black  text-custom-16 font-500">
-      Ankamroa is David
-    </h1>
-    </>
-  )
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <main className="p-8">
+        <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      </main>
+    </div>
+  );
 }
-
-export default App
