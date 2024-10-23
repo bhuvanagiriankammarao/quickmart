@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-        <h1 className=" font-poppins text-black  text-custom-16 font-500">
+        <h1 className=" font-poppins text-black  text-custom-18 font-500">
       hi bro 
     </h1>
     </>
