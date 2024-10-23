@@ -23,7 +23,7 @@ const SignupForm = () => {
     event.preventDefault();
     setError(''); // Clear previous errors
 
-    // Validate email and password
+    
     if (!validateEmail(email)) {
       setError('Please enter a valid email address.');
       return;
