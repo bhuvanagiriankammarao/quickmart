@@ -6,7 +6,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="p-8">
-        <h1 className="text-3xl font-bold underline">Hello worl!</h1>
+        <h1 className="text-3xl font-bold underline">Hello world!</h1>
       </main>
     </div>
   );
