@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from "../../context/CartContext"; // Adjusted import path
+;
 
 const Shop = () => {
   const { addToCart } = useContext(CartContext);
@@ -33,3 +34,6 @@ const Shop = () => {
 };
 
 export default Shop;
+
+
+

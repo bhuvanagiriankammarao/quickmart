@@ -1,15 +1,15 @@
 // src/pages/Routes.jsx
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Home from './Home';
-import Shop from './Shop';
-import About from './About';
-import Contact from './Contact';
-import SignIn from './SignIn';
-import SignUp from './SignUp';
-import SearchResults from './SearchResults';
-import Cart from './Cart';
-import Wishlist from './Wishlist'; // Import Wishlist page
+import Home from './Home/Home';  // Updated import path
+import Shop from './Shop/Shop';  // Updated import path
+import About from './About/About';  // Updated import path
+import Contact from './Contact/Contact';  // Updated import path
+import SignIn from './SignIn/SignIn';  // Updated import path
+import SignUp from './SignUp/SignUp';  // Updated import path
+import SearchResults from './SearchResults/SearchResults';  // Updated import path
+import Cart from './Cart/Cart';  // Updated import path
+import Wishlist from './Wishlist/Wishlist';  // Updated import path
 
 const AppRoutes = () => {
   return (
@@ -22,7 +22,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/search" element={<SearchResults />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/wishlist" element={<Wishlist />} /> {/* Add the wishlist route */}
+      <Route path="/wishlist" element={<Wishlist />} />
     </Routes>
   );
 };

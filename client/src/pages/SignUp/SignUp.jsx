@@ -1,6 +1,7 @@
 // src/pages/SignUp.jsx
 import React, { useState } from 'react';
-import { auth } from '../firebaseConfig';  // Import your Firebase configuration
+import { auth } from "../../firebaseConfig"; // Adjusted import path
+ // Import your Firebase configuration
 import { createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, sendEmailVerification } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -143,3 +144,5 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
+

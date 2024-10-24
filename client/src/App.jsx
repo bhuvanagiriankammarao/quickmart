@@ -1,17 +1,16 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import { CartProvider } from './context/CartContext';  // Import CartProvider
-import AppRoutes from './pages/Routes';  // Import the new routing component
+import Navbar from './components//Navbar'; // Adjusted import path
+import AppRoutes from './pages/Routes';
+import { CartProvider } from './context/CartContext';  // Ensure CartContext exists and is correctly imported
 
 const App = () => {
   return (
     <Router>
-      <CartProvider>  {/* Wrap the app with CartProvider */}
+      <CartProvider>
         <div>
           <Navbar />
-          <AppRoutes />  {/* Call the AppRoutes component */}
+          <AppRoutes />
         </div>
       </CartProvider>
     </Router>

@@ -1,6 +1,7 @@
 // src/pages/SignIn.jsx
 import React, { useState } from 'react';
-import { auth } from '../firebaseConfig';  // Import the auth object
+import { auth } from "../../firebaseConfig";  // Adjust the import path accordingly
+// Import the auth object
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,3 +71,5 @@ const SignIn = () => {
 };
 
 export default SignIn;
+
+

@@ -1,7 +1,7 @@
-// src/firebaseConfig.js
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAD168d2LWUpaPN0TOONQ78HqcdJrtuctU",
   authDomain: "quickmart-95fb5.firebaseapp.com",
@@ -14,6 +14,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Initialize Firebase Authentication
+const auth = getAuth(app);
 
 export { auth };
