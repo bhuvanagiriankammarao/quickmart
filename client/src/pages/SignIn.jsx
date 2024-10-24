@@ -55,6 +55,15 @@ const SignIn = () => {
             Sign In
           </button>
         </form>
+        <p className="mt-4 text-center">
+          Don't have an account?{' '}
+          <button
+            onClick={() => navigate('/signup')} // Redirect to Sign Up page
+            className="text-blue-500 hover:underline"
+          >
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );
