@@ -7,11 +7,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary': "#ECEEFF",
-        "coral-red": "#FF6452",
-        "slate-gray": "#6D6D6D",
-        "pale-blue": "#F5F6FF",
-        "white-400": "rgba(255, 255, 255, 0.80)"
+        cloudGray: '#666666',
+        stoneGay: '#898989', 
+        lightGray: '#B0B0B0',
+        steelGray: '#9F9F9F',
+        orangeCustom: '#FB8526',
+        snowWhite: '#FBFBFB',
+        antiqueGold: '#B88E2F',
+        ivoryCream: '#F9F1E7',
+        bronzeGold: '#B88E2F',
+        aquaBlue: '#1C89A1',
+        crystalAqua: '#40B2BD',
+        peach: '#E97171',
+        leafGreen: '#11AC53',
+        darkBlue: '#000080',
+        royalBlue: '#305CDE'
+       
+     
       },
 
       fontFamily: {
@@ -20,15 +32,29 @@ export default {
 
 
       fontSize: {
+        'custom-12': ['12px', '18px'],
+        'custom-13': ['13px', '19px'],
+        'custom-14' : ['14px', '21px'],
         'custom-16': ['16px', '24px'],  // font-size of 16px with line-height of 24px
+        'custom-20': ['20px', '30px'],
+        'custom-24': ['24px', '36px'],
+        'custom-32': ['32px', '48px'],
+        'custom-40': ['40px', '48px'],
+        'custom-42': ['42px', '63px'],
+        'custom-48': ['48px', '72px'],
+        'custom-50': ['50px', '75px'],
+
       },
 
 
       fontWeight: {
         500: '500',  // font-weight of 500
+        400: '400',
+        300: '300'
+
       },
 
-      
+
     },
   },
   plugins: [],
