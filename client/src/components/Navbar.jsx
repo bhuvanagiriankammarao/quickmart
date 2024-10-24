@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { FaSearch, FaUserCircle, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { CartContext } from "../context/CartContext";  // Import CartContext
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/logo.png"; //import 
 
 const Navbar = () => {
   const { cartItems } = useContext(CartContext);
