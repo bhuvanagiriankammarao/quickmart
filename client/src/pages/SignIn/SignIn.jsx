@@ -1,6 +1,7 @@
 // src/pages/SignIn.jsx
 import React, { useState } from 'react';
-import { auth } from '../firebaseConfig';  // Import the auth object
+import { auth } from "../../firebaseConfig";  // Adjust the import path accordingly
+// Import the auth object
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,9 +56,20 @@ const SignIn = () => {
             Sign In
           </button>
         </form>
+        <p className="mt-4 text-center">
+          Don't have an account?{' '}
+          <button
+            onClick={() => navigate('/signup')} // Redirect to Sign Up page
+            className="text-blue-500 hover:underline"
+          >
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );
 };
 
 export default SignIn;
+
+

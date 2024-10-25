@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from '../../context/CartContext';  // Move up two levels to access the context folder
+
 
 const Cart = () => {
   const { cartItems, incrementQuantity, decrementQuantity, removeFromCart } = useContext(CartContext);
@@ -67,3 +68,5 @@ const Cart = () => {
 };
 
 export default Cart;
+
+
