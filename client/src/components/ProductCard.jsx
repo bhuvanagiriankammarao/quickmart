@@ -32,7 +32,7 @@ const ProductCard = ({ imgURL, name, quantity, price, orignalPrice }) => {
         {/* Add to Cart Button */}
       
         <button className="text-orangeCustom font-semibold mb-4 bg-white
-         absolute w-[202px] h-[48px] gap-0 opacity-0 
+         absolute w-[202px] h-[48px] 
          group-hover:opacity-100 transition-opacity">Add to cart</button>
 
         {/* Action Buttons */}

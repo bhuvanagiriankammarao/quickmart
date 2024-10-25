@@ -32,20 +32,21 @@ const Navbar = () => {
           <img src={logo} alt="Logo" className="w-40 h-30 flex items-start" />
           </Link>
 
-          <ul className="hidden md:flex gap-6 text-lg font-bold text-blue-900">
-            <li className="hover:text-red-500 cursor-pointer">
+          <ul className="hidden md:flex gap-6 text-lg font-bold text-blue-900
+          hover:text-gray-600 cursor-pointer">
+            <li>
               <Link to="/">Home</Link>
             </li>
-            <li className="hover:text-red-500 cursor-pointer">
+            <li>
               <Link to="/products">Products</Link>
             </li>
-            <li className="hover:text-red-500 cursor-pointer">
+            <li >
               <Link to="/shop">Shop</Link>
             </li>
-            <li className="hover:text-red-500 cursor-pointer">
+            <li>
               <Link to="/about">About</Link>
             </li>
-            <li className="hover:text-red-500 cursor-pointer">
+            <li>
               <Link to="/contact">Contact</Link>
             </li>
           </ul>
