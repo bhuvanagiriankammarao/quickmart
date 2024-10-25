@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ imgURL, name, quantity, price, orignalPrice }) => {
   return (
@@ -29,8 +30,9 @@ const ProductCard = ({ imgURL, name, quantity, price, orignalPrice }) => {
       <div className="absolute inset-0 flex flex-col items-center justify-center
       bg-dimGray bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         {/* Add to Cart Button */}
+      
         <button className="text-orangeCustom font-semibold mb-4 bg-white
-         absolute w-[202px] h-[48px] gap-0 opacity-0 
+         absolute w-[202px] h-[48px] 
          group-hover:opacity-100 transition-opacity">Add to cart</button>
 
         {/* Action Buttons */}
