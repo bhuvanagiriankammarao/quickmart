@@ -21,7 +21,8 @@ export default {
         peach: '#E97171',
         leafGreen: '#11AC53',
         darkBlue: '#000080',
-        royalBlue: '#305CDE'
+        royalBlue: '#305CDE',
+        dimGray: '#3A3A3A'
        
      
       },
@@ -52,6 +53,22 @@ export default {
         400: '400',
         300: '300'
 
+      },
+
+
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        slideInText: {
+          '0%': { transform: 'translateY(50px)', opacity: 0 },
+          '100%': { transform: 'translateY(0)', opacity: 1 },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.5s ease-out',
+        slideInText: 'slideInText 0.8s ease-out',
       },
 
 
