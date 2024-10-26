@@ -88,3 +88,57 @@ export const categoriesHomePage = [
 
    
   ]
+
+
+
+  export const features = [
+    {
+        title: "Free Delivery",
+        text: "For all oders over $50, consectetur adipim scing eli",
+
+    },
+
+    {
+        title: "Quality Checks",
+        text: "If goods have problems, consectetur adipim scing elit.",
+
+    },
+
+    {
+        title: "Secure Payment",
+        text: "100% secure payment, consectetur adipim scing elit.",
+
+    },
+  ]
+
+
+
+
+  export const footerLinks = [
+    {
+        title: "links",
+        links: [
+            { name: "Home", link: "/home" },
+            { name: "Shop", link: "/shop" },
+            { name: "About", link: "/about" },
+            { name: "Contact", link: "/contact" },
+
+        ],
+    },
+    {
+        title: "Help",
+        links: [
+            { name: "Payment Options", link: "/" },
+            { name: "Returns", link: "/" },
+            { name: "Privacy Policy", link: "/" },
+
+        ],
+    },
+    {
+        title: "newsLetter",
+        links: [
+            { name: "SUBSCRIBE" },
+           
+        ],
+    },
+];

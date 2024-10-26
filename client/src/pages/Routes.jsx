@@ -10,6 +10,7 @@ import SignUp from './SignUp/SignUp';  // Updated import path
 import SearchResults from './SearchResults/SearchResults';  // Updated import path
 import Cart from './Cart/Cart';  // Updated import path
 import Wishlist from './Wishlist/Wishlist';  // Updated import path
+import Category from './Category/Category';
 
 const AppRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route path="/search" element={<SearchResults />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/category" element={<Category />} />
     </Routes>
   );
 };
