@@ -1,9 +1,9 @@
-// src/pages/SignIn.jsx
 import React, { useState } from 'react';
-import { auth } from "../../firebaseConfig";  // Adjust the import path accordingly
-// Import the auth object
+import { auth } from "../../firebaseConfig"; // Adjust as necessary
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/images/logo.png'; // Import your logo image
+import SignUpbg from '../../assets/images/signUpbg.png'; // Replace with your image path
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -15,54 +15,80 @@ const SignIn = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');  // Redirect to Home after sign-in
+      navigate('/'); // Redirect to Home after sign-in
     } catch (err) {
       setError('Invalid email or password');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Sign In</h2>
-        <form onSubmit={handleSignIn}>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="flex h-screen">
+      {/* Left Image Section */}
+      <div className="hidden lg:flex flex-[0.51]">
+        <img
+          src={SignUpbg}
+          alt="Sign In"
+          className="object-cover w-full h-full"
+        />
+      </div>
+
+      {/* Right Form Section */}
+      <div className="flex flex-col mt-10 justify-center items-center flex-[0.6] max-w-xl mx-auto p-8 shadow-lg bg-white">
+        <img src={logo} alt="Logo" className="w-26 h-20 mb-6" />
+        <h2 className="text-2xl font-bold text-blue-700 mb-6"> Log In</h2>
+        <form onSubmit={handleSignIn} className="w-full">
+          {error && (
+            <p className="text-red-600 mb-4 text-center">{error}</p>
+          )}
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700">Email:</label>
+            <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+              User ID
+            </label>
             <input
-              type="email"
+              type="text"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none"
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700">Password:</label>
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+              Password
+            </label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none"
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             />
+          </div>
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </button>
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+            className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors"
           >
-            Sign In
+            Log In
           </button>
         </form>
-        <p className="mt-4 text-center">
-          Don't have an account?{' '}
+        <p className="mt-6 text-gray-700">
+          New User?{' '}
           <button
-            onClick={() => navigate('/signup')} // Redirect to Sign Up page
-            className="text-blue-500 hover:underline"
+            onClick={() => navigate('/signup')}
+            className="text-blue-600 font-semibold hover:underline"
           >
-            Register
+            Sign Up
           </button>
         </p>
       </div>
@@ -71,5 +97,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
-

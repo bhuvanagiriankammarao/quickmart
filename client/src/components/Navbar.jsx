@@ -1,93 +1,113 @@
-// src/components/navbar/Navbar.jsx
-import React, { useContext, useState } from "react";
-import { FaSearch, FaUserCircle, FaHeart, FaShoppingCart } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaSearch, FaUserCircle, FaHeart, FaShoppingCart, FaBars } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { CartContext } from "../context/CartContext";  
-import logo from "../assets/images/logo.png"; 
+import { useSelector } from "react-redux";
+import logo from "../assets/images/logo.png";
 
 const Navbar = () => {
-  const { cartItems } = useContext(CartContext);
-  const [searchQuery, setSearchQuery] = useState(''); // Local state for search input
-  const navigate = useNavigate(); // Initialize useNavigate
+  const cartItems = useSelector((state) => state.cart); // Fetch cart items from Redux
+  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0); // Calculate total quantity
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Function to handle sign-in button click
   const handleSignInClick = () => {
-    navigate('/signin'); // Redirect to Sign In page
+    navigate('/signin');
   };
 
-  // Function to handle search submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`); // Redirect to search results page
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   return (
-    <nav className=" shadow-md p-4 font-poppins h-24 pt-6">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Left Section: Logo + Navigation Links */}
-        <div className="flex items-center gap-12">
-          <Link to='/'>
-          <img src={logo} alt="Logo" className="w-40 h-30 flex items-start" />
+    <nav className="shadow-md p-4 font-poppins h-20 lg:h-24 pt-6">
+      <div className="container mx-auto flex flex-col lg:flex-row lg:justify-between items-center">
+        {/* Logo Section */}
+        <div className="flex justify-between w-full lg:w-auto items-center mb-4 lg:mb-0">
+          <Link to="/" className="flex items-center ">
+            <img src={logo} alt="Logo" className=" w-40  h-30  " />
           </Link>
 
-          <ul className="hidden md:flex gap-6 text-lg font-bold text-blue-900
-          hover:text-gray-600 cursor-pointer">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/products">Products</Link>
-            </li>
-            <li >
-              <Link to="/shop">Shop</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/contact">Contact</Link>
-            </li>
-          </ul>
+          <div className="flex items-center gap-3 lg:hidden">
+            <Link to="/wishlist">
+              <FaHeart size={20} className="cursor-pointer hover:text-red-600" />
+            </Link>
+            <Link to="/cart">
+              <div className="relative">
+                <FaShoppingCart size={20} className="cursor-pointer hover:text-gray-600" />
+                {cartItemCount > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </div>
+            </Link>
+            <button onClick={handleSignInClick} className="flex items-center gap-2 hover:text-gray-500 font-medium">
+              <FaUserCircle size={20} />
+              <span className="text-sm">Sign In</span>
+            </button>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-blue-900 lg:hidden">
+              <FaBars size={20} />
+            </button>
+          </div>
         </div>
 
-        {/* Center Section: Search Bar */}
-        <div className="flex-1 mx-8">
-          <form onSubmit={handleSearchSubmit} className="relative">
+        {/* Menu Links */}
+        <ul
+          className={`${
+            isMenuOpen ? "block" : "hidden"
+          } lg:flex flex-col lg:flex-row gap-6 w-full lg:w-auto bg-white lg:bg-transparent p-4 lg:p-0 text-blue-900 lg:static absolute top-20 left-0 z-50 font-500`}
+        >
+          <li className="hover:text-dimGray hover:underline">
+            <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+          </li>
+          <li className="hover:text-dimGray hover:underline">
+            <Link to="/shop" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+          </li>
+          <li className="hover:text-dimGray hover:underline">
+            <Link to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
+          </li>
+          <li className="hover:text-dimGray hover:underline">
+            <Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+          </li>
+        </ul>
+
+        {/* Search Bar */}
+        <div className="w-full lg:w-auto lg:mt-0 flex pt-6 lg:pt-0">
+          <form onSubmit={handleSearchSubmit} className="relative w-full lg:w-[22rem]">
             <input
               type="text"
               placeholder="Search products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full border rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <button type="submit" className="absolute right-4 top-2.5 cursor-pointer  text-blue-900">
-              <FaSearch size={22} />
+            <button type="submit" className="absolute right-4 top-2.5 cursor-pointer text-blue-900 font-medium">
+              <FaSearch size={18} />
             </button>
           </form>
         </div>
 
-        {/* Right Section: Icons + Sign In */}
-        <div className="flex items-center gap-6  text-blue-900">
+        {/* Icons + Sign In for Desktop */}
+        <div className="hidden lg:flex items-center gap-6 text-blue-900">
           <Link to="/wishlist">
-            <FaHeart size={22} className="cursor-pointer  hover:text-gray-600" />
+            <FaHeart size={24} className="cursor-pointer hover:text-red-600" />
           </Link>
           <Link to="/cart">
             <div className="relative">
-              <FaShoppingCart size={22} className="cursor-pointer  hover:text-gray-600" />
-              {cartItems.length > 0 && (
+              <FaShoppingCart size={24} className="cursor-pointer hover:text-gray-600" />
+              {cartItemCount > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {cartItems.length}
+                  {cartItemCount}
                 </span>
               )}
             </div>
           </Link>
-          <button
-            onClick={handleSignInClick} // Updated onClick to use navigate
-            className="flex items-center gap-2 hover:text-gray-500 font-bold"
-          >
-            <FaUserCircle size={22} />
+          <button onClick={handleSignInClick} className="flex items-center gap-2 hover:text-gray-500 font-medium">
+            <FaUserCircle size={24} />
             <span>Sign In</span>
           </button>
         </div>
@@ -97,5 +117,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
