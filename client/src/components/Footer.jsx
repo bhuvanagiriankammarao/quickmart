@@ -56,7 +56,7 @@ const Footer = () => {
 
       {/* Footer Bottom */}
       <div className='mt-8 text-sm text-gray-600'>
-        2024 by M.A.D
+        2024 by Lyros Technologies PVT LTD.
       </div>
     </footer>
   )

@@ -1,16 +1,20 @@
-// src/pages/Routes.jsx
+
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Home from './Home/Home';  // Updated import path
-import Shop from './Shop/Shop';  // Updated import path
-import About from './About/About';  // Updated import path
-import Contact from './Contact/Contact';  // Updated import path
-import SignIn from './SignIn/SignIn';  // Updated import path
-import SignUp from './SignUp/SignUp';  // Updated import path
-import SearchResults from './SearchResults/SearchResults';  // Updated import path
-import Cart from './Cart/Cart';  // Updated import path
-import Wishlist from './Wishlist/Wishlist';  // Updated import path
-import Category from './Category/Category';
+import Home from './Home/Home'; 
+import Shop from './Shop/Shop'; 
+import About from './About/About'; 
+import Contact from './Contact/Contact'; 
+import SignIn from './SignIn/SignIn'; 
+import SignUp from './SignUp/SignUp'; 
+import SearchResults from './SearchResults/SearchResults'; 
+import Cart from './Cart/Cart'; 
+import Wishlist from './Wishlist/Wishlist'; 
+import CategoryList from '../components/CategoryList';
+import ProductList from '../components/ProductList';
+import ProductDetails from '../components/ProductDetails';
+import Payment from '../pages/Payment/Payment';
+import OrderPlaced from '../pages/OrderPlaced/OrderPlaced';
 
 const AppRoutes = () => {
   return (
@@ -24,9 +28,21 @@ const AppRoutes = () => {
       <Route path="/search" element={<SearchResults />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/category" element={<Category />} />
+      <Route  path='/payment' element={<Payment />}/>
+      <Route  path='/orderplaced' element={<OrderPlaced/>}/>
+      
+     
+
+      {/* Categories and Products */}
+      <Route path="/category" element={<CategoryList />} />
+      <Route path="/category/:categoryId" element={<ProductList />} />
+
+      {/* Product Details Route */}
+      <Route path="/product/:productId" element={<ProductDetails />} />
     </Routes>
   );
 };
 
 export default AppRoutes;
+
+
