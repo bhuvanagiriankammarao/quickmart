@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { auth } from "../../firebaseConfig"; // Adjust as necessary
+import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../assets/images/logo.png'; // Import your logo image
-import SignUpbg from '../../assets/images/signUpbg.png'; // Replace with your image path
+import logo from '../../assets/images/logo.png';
+import SignUpbg from '../../assets/images/signUpbg.png';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -14,8 +14,15 @@ const SignIn = () => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/'); // Redirect to Home after sign-in
+      // Check if the credentials are for the admin
+      if (email === 'admin@123' && password === '123456') {
+        // Redirect to admin dashboard
+        navigate('/admin');
+      } else {
+        // Regular user login
+        await signInWithEmailAndPassword(auth, email, password);
+        navigate('/'); // Redirect to Home after sign-in
+      }
     } catch (err) {
       setError('Invalid email or password');
     }
