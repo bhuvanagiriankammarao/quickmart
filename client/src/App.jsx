@@ -1,22 +1,36 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import Navbar from './components//Navbar'; // Adjusted import path
-import AppRoutes from './pages/Routes';
-import { CartProvider } from './context/CartContext';  // Ensure CartContext exists and is correctly imported
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import AppRoutes from './Routing/Routes';
+import { CartProvider } from './context/CartContext'; 
 import Footer from './components/Footer';
+import FeaturesSection from './section/FeaturesSection';
+import { Provider } from 'react-redux';
+import store from './store/store';
+import AdminRoutes from './Routing/AdminRoutes';
 
 const App = () => {
   return (
-    <Router>
-      <CartProvider>
-        <div>
-          <Navbar />
-          <AppRoutes />
-        </div>
-        <Footer />
-      </CartProvider>
-     
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <CartProvider>
+          <Routes>
+            <Route path="/admin/*" element={<AdminRoutes />} />
+            <Route 
+              path="/*" 
+              element={
+                <>
+                  <Navbar />
+                  <AppRoutes />
+                  <FeaturesSection />
+                  <Footer />
+                </>
+              } 
+            />
+          </Routes>
+        </CartProvider>
+      </Router>
+    </Provider>
   );
 };
 

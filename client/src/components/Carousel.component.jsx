@@ -77,7 +77,7 @@ export default function Carousel({ slides }) {
           <div
             key={i}
             onClick={() => setCurrent(i)}
-            className={`rounded-full w-4 h-4 md:w-5 md:h-5 cursor-pointer ${
+            className={`rounded-full w-4 h-4 md:w-2 md:h-2 cursor-pointer ${
               i === current ? "bg-white" : "bg-gray-500"
             }`}
           ></div>
