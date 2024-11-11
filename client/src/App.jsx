@@ -8,6 +8,7 @@ import FeaturesSection from './section/FeaturesSection';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import AdminRoutes from './Routing/AdminRoutes';
+import ChatSupport from './pages/Chat/Chat';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
                   <AppRoutes />
                   <FeaturesSection />
                   <Footer />
+                  <ChatSupport />
                 </>
               } 
             />
