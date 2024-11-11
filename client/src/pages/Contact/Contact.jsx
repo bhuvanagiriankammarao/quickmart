@@ -135,7 +135,7 @@ const styles = {
         borderRadius: '5px',
         cursor: 'pointer',
         width: '100%',
-        backgroundColor: 'blue'
+     
     },
     map: {
         flex: 1,
