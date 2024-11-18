@@ -1,460 +1,490 @@
-import React, { useState } from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { productsData } from '../../data/index';
-import Popup from 'reactjs-popup';
-import 'reactjs-popup/dist/index.css';
 
-const Products = () => {
-  const [products, setProducts] = useState(productsData);
-  const [newProduct, setNewProduct] = useState({
-    id: '',
+import React, { useReducer, useEffect, useState } from 'react';
+
+// Initial state
+const initialState = {
+  newProduct: {
     name: '',
     category: '',
     price: '',
     stock: '',
     image: null,
-    quantity: '',           
-    originalPrice: '',       
-    productDetails: '', 
-  });
-  const [imagePreview, setImagePreview] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddProductForm, setShowAddProductForm] = useState(false);
-  const [activeTab, setActiveTab] = useState('All');
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [currentProductId, setCurrentProductId] = useState(null);
+    originalprice: '',
+    productId: '',
+    quantity: '',
+    productDetails: '',
+  },
+  imagePreview: null,
+  loading: false,
+  error: null,
+  products: [],
+  searchQuery: '',
+  productToEdit: null, // To store product being edited
+};
 
-  const [notification, setNotification] = useState({
-    message: '',
-    visible: false
-  });
-  
-  const showNotification = (productName) => {
-    setNotification({ message: `New product added: ${productName}`, visible: true });
-    
-    // Hide the notification after 3 seconds
-    setTimeout(() => {
-      setNotification({ message: '', visible: false });
-    }, 3000);
+// Reducer function
+const productReducer = (state, action) => {
+  switch (action.type) {
+    case 'UPDATE_NEW_PRODUCT':
+      return { ...state, newProduct: { ...state.newProduct, [action.name]: action.value } };
+    case 'SET_IMAGE_PREVIEW':
+      return { ...state, imagePreview: action.payload };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'RESET_NEW_PRODUCT':
+      return { ...state, newProduct: initialState.newProduct, imagePreview: null, error: null, productToEdit: null };
+    case 'SET_PRODUCTS':
+      return { ...state, products: action.payload };
+    case 'SET_SEARCH_QUERY':
+      return { ...state, searchQuery: action.payload };
+    case 'SET_PRODUCT_TO_EDIT':
+      return { ...state, productToEdit: action.payload };
+    default:
+      return state;
+  }
+};
+
+const Products = () => {
+  const [state, dispatch] = useReducer(productReducer, initialState);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  // Fetch products from backend
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/products/get');
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: 'SET_PRODUCTS', payload: data });
+      } else {
+        console.error('Error fetching products:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewProduct({ ...newProduct, [name]: value });
+    dispatch({ type: 'UPDATE_NEW_PRODUCT', name, value });
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setNewProduct({ ...newProduct, image: file });
-    setImagePreview(URL.createObjectURL(file));
+    if (file) {
+      dispatch({ type: 'UPDATE_NEW_PRODUCT', name: 'image', value: file });
+      dispatch({ type: 'SET_IMAGE_PREVIEW', payload: URL.createObjectURL(file) });
+    }
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
-    setProducts([...products, { 
-      ...newProduct, 
-      price: parseFloat(newProduct.price),
-      image: imagePreview,
-    }]);
-    showNotification(newProduct.name); // Show styled notification with the product name
-    resetForm();
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+
+    try {
+      const formData = new FormData();
+      formData.append('name', state.newProduct.name);
+      formData.append('category', state.newProduct.category);
+      formData.append('price', state.newProduct.price);
+      formData.append('stock', state.newProduct.stock);
+      formData.append('originalprice', state.newProduct.originalprice);
+      formData.append('productId', state.newProduct.productId);
+      formData.append('quantity', state.newProduct.quantity);
+      formData.append('productDetails', state.newProduct.productDetails);
+
+      if (state.newProduct.image) {
+        formData.append('image', state.newProduct.image);
+      } else {
+        dispatch({ type: 'SET_ERROR', payload: 'Image file is missing' });
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/api/products/add', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Product added:', data);
+        dispatch({ type: 'RESET_NEW_PRODUCT' });
+        fetchProducts(); // Re-fetch products after adding a new one
+      } else {
+        console.error('Error adding product:', await response.text());
+        dispatch({ type: 'SET_ERROR', payload: 'Error adding product' });
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Error adding product' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
 
-  const handleEditProduct = (id) => {
-    const productToEdit = products.find(product => product.id === id);
-    setNewProduct(productToEdit);
-    setImagePreview(productToEdit.image);
-    setCurrentProductId(id);
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/products/delete/${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        dispatch({
+          type: 'SET_PRODUCTS',
+          payload: state.products.filter((product) => product._id !== productId),
+        });
+        console.log('Product deleted');
+      } else {
+        console.error('Error deleting product');
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value });
+  };
+
+  const handleEditProduct = (product) => {
+    dispatch({ type: 'SET_PRODUCT_TO_EDIT', payload: product });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'name',
+      value: product.name,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'category',
+      value: product.category,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'price',
+      value: product.price,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'stock',
+      value: product.stock,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'originalprice',
+      value: product.originalprice,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'productId',
+      value: product.productId,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'quantity',
+      value: product.quantity,
+    });
+    dispatch({
+      type: 'UPDATE_NEW_PRODUCT',
+      name: 'productDetails',
+      value: product.productDetails,
+    });
+
+    dispatch({
+      type: 'SET_IMAGE_PREVIEW',
+      payload: `http://localhost:5000${product.image}`,
+    });
+
     setShowEditModal(true);
   };
 
-  const handleUpdateProduct = (e) => {
-    e.preventDefault();
-    setProducts(products.map(product => 
-      product.id === currentProductId ? { ...newProduct, price: parseFloat(newProduct.price), image: imagePreview } : product
-    ));
-
-    setNotification({
-      visible: true,
-      message: `Product "${newProduct.name}" updated successfully!`,
-    });
-
-
-    setTimeout(() => {
-      setNotification({ visible: false, message: '' });
-    }, 3000);
-
-
-    resetForm();
+  const handleModalClose = () => {
     setShowEditModal(false);
+    dispatch({ type: 'RESET_NEW_PRODUCT' });
   };
-
-  const resetForm = () => {
-    setNewProduct({ id: '', name: '', category: '', price: '', stock: '', image: null,
-      quantity: '', originalPrice: '', productDetails: '' 
-     });
-    setImagePreview(null);
-    setShowAddProductForm(false);
-  };
-
-  // const handleDeleteProduct = (id) => {
-  //   setProducts(products.filter((product) => product.id !== id));
-    
-  // };
-
-
-  const handleDeleteProduct = (id) => {
-    const productToDelete = products.find((product) => product.id === id);
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    if (!state.productToEdit) return;
   
-    setProducts(products.filter((product) => product.id !== id));
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
   
-    setNotification({
-      visible: true,
-      message: `Product "${productToDelete.name}" deleted successfully!`,
-    });
+    try {
+      const formData = new FormData();
+      formData.append('name', state.newProduct.name);
+      formData.append('category', state.newProduct.category);
+      formData.append('price', state.newProduct.price);
+      formData.append('stock', state.newProduct.stock);
+      formData.append('originalprice', state.newProduct.originalprice);
+      formData.append('quantity', state.newProduct.quantity);
+      formData.append('productId', state.newProduct.productId);
+      formData.append('productDetails', state.newProduct.productDetails);
   
-    setTimeout(() => {
-      setNotification({ visible: false, message: '' });
-    }, 3000);
-  };
+      if (state.newProduct.image instanceof File) {
+        formData.append('image', state.newProduct.image);
+      }
   
-
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (activeTab === 'All') {
-      return matchesSearch;
-    } else if (activeTab === 'Low Stock') {
-      return matchesSearch && product.stock > 0 && product.stock <= 10;
-    } else if (activeTab === 'Out of Stock') {
-      return matchesSearch && product.stock === 0;
-    } else if (activeTab === 'In Stock') {
-      return matchesSearch && product.stock > 10;
+      const response = await fetch(`http://localhost:5000/api/products/update/${state.productToEdit._id}`, {
+        method: 'PUT',
+        body: formData, 
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Product updated:', data);
+        fetchProducts();
+        setShowEditModal(false);
+        dispatch({ type: 'RESET_NEW_PRODUCT' });
+      } else {
+        console.error('Error updating product:', await response.text());
+        dispatch({ type: 'SET_ERROR', payload: 'Error updating product' });
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Error updating product' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-    return false;
-  });
+  };
+   
 
-return (
-    <div className="p-6 bg-gray-100 min-h-screen font-poppins">
-      <div className="flex justify-between items-center mb-6">
-      {notification.visible && (
-  <div className="fixed top-4 right-[28rem] bg-gradient-to-r from-green-400 to-green-600 text-white py-3 px-6 rounded-xl shadow-xl flex items-center space-x-3 transition-transform transform-gpu duration-300 ease-out animate-bounce">
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-      <path d="M3 3h2l.4 2M7 13h10l3-8H6.4L5.2 5H3m4 12a2 2 0 100 4 2 2 0 000-4zm10 0a2 2 0 100 4 2 2 0 000-4z" />
-    </svg>
-    <span className="font-semibold">{notification.message}</span>
-  </div>
-)}
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
+  const filteredProducts = state.products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+      product.productId.toLowerCase().includes(state.searchQuery.toLowerCase())
+  );
 
-        <h2 className="text-3xl font-bold text-gray-800">Product List</h2>
+  return (
+    <div className="container mx-auto p-4 ">
+      {/* Add Product Form */}
+      <form onSubmit={handleAddProduct} className="bg-white p-6 rounded-lg shadow-md space-y-4 mb-4">
+        <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+        <input
+          type="text"
+          name="name"
+          value={state.newProduct.name}
+          onChange={handleInputChange}
+          placeholder="Name"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="text"
+          name="productId"
+          value={state.newProduct.productId}
+          onChange={handleInputChange}
+          placeholder="Product ID"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="text"
+          name="category"
+          value={state.newProduct.category}
+          onChange={handleInputChange}
+          placeholder="Category"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="number"
+          name="price"
+          value={state.newProduct.price}
+          onChange={handleInputChange}
+          placeholder="Price"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="number"
+          name="stock"
+          value={state.newProduct.stock}
+          onChange={handleInputChange}
+          placeholder="Stock"
+          className="w-full border p-2 rounded"
+          required
+        />
+        
+        <input
+          type="number"
+          name="quantity"
+          value={state.newProduct.quantity}
+          onChange={handleInputChange}
+          placeholder="Quantity"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="number"
+          name="originalprice"
+          value={state.newProduct.originalprice}
+          onChange={handleInputChange}
+          placeholder="Original Price"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <textarea
+          name="productDetails"
+          value={state.newProduct.productDetails}
+          onChange={handleInputChange}
+          placeholder="Product Details"
+          className="w-full border p-2 rounded"
+        />
+        <input type="file" onChange={handleImageChange} className="w-full" />
+        {state.imagePreview && (
+          <img src={state.imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2" />
+        )}
+        {state.error && <p className="text-red-500 text-sm">{state.error}</p>}
         <button
-          className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-300"
-          onClick={() => setShowAddProductForm(!showAddProductForm)}
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded-lg w-full"
+          disabled={state.loading}
         >
-          + Add Product
+          {state.loading ? 'Adding Product...' : 'Add Product'}
         </button>
-      </div>
+      </form>
 
-      {showAddProductForm && (
-        <form onSubmit={handleAddProduct} className="mb-6 p-4 bg-white shadow-md rounded-lg">
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="id"
-              placeholder="Product ID"
-              value={newProduct.id}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="text"
-              name="name"
-              placeholder="Product Name"
- value={newProduct.name}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="text"
-              name="category"
-              placeholder="Category"
-              value={newProduct.category}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="number"
-              name="price"
-              placeholder="Price"
-              value={newProduct.price}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            
-            <input
-              type="number"
-              name="stock"
-              placeholder="Stock"
-              value={newProduct.stock}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="file"
-              name="image"
-              onChange={handleImageChange}
-              className="p-2 border rounded-md"
-            />
-
-<input
-      type="text"
-      name="quantity"
-      placeholder="Quantity"
-      value={newProduct.quantity}
-      onChange={handleInputChange}
-      required
-      className="p-2 border rounded-md"
-    />
-    <input
-      type="number"
-      name="originalPrice"
-      placeholder="Original Price"
-      value={newProduct.originalPrice}
-      onChange={handleInputChange}
-      required
-      className="p-2 border rounded-md"
-    />
-    <textarea
-      name="productDetails"
-      placeholder="Product Details"
-      value={newProduct.productDetails}
-      onChange={handleInputChange}
-      required
-      className="p-2 border rounded-md"
-    ></textarea>
-          </div>
-          <button
-            type="submit"
-            className="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300"
-          >
-            Add Product
-          </button>
-          <button
-        type="button"
-        onClick={resetForm}
-        className="bg-red-600 text-white py-2 px-8  ml-24 rounded-lg hover:bg-red-700 transition duration-300"
-      >
-        Cancel
-      </button>
-        </form>
-      )}
-
+      {/* Search */}
       <input
         type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4 p-2 border rounded-md w-full"
+        value={state.searchQuery}
+        onChange={handleSearchChange}
+        placeholder="Search Products"
+        className="border p-2 rounded w-full mb-4"
       />
 
-      <div className="mb-4 flex space-x-4">
-        {['All', 'Low Stock', 'Out of Stock', 'In Stock'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`py-2 px-4 rounded-lg ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-          >
-            {tab}
-          </button>
+      {/* Product List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProducts.map((product) => (
+          <div key={product._id} className="bg-white p-4 rounded-lg shadow-md">
+            <h3 className="font-semibold text-lg">{product.name}</h3>
+            <p>Product ID: {product.productId}</p>
+            <p>Category: {product.category}</p>
+            <p>Price: ${product.price}</p>
+            <p>Stock: {product.stock}</p>
+            <p>Quantity: {product.quantity}</p>
+            <p>Original Price: ${product.originalprice}</p>
+            <p>{product.productDetails}</p>
+            <img
+              src={`http://localhost:5000${product.image}`}
+              alt={product.name}
+              className="w-10px h-32px object-cover mt-2"
+            />
+            <button
+              onClick={() => handleEditProduct(product)}
+              className="bg-yellow-500 text-white p-2 rounded-lg mt-4 w-full"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDeleteProduct(product._id)}
+              className="bg-red-500 text-white p-2 rounded-lg mt-4 w-full"
+            >
+              Delete
+            </button>
+          </div>
         ))}
       </div>
 
-      <table className="min-w-full bg-white border border-gray-300">
-        <thead>
-          <tr>
-          <th className="border px-4 py-2">ID</th>
-            <th className="border px-4 py-2">Image</th>
-            <th className="border px-4 py-2">Product Name</th>
-            <th className="border px-4 py-2">Category</th>
-            <th className="border px-4 py-2">Price</th>
-            <th className="border px-4 py-2">Stock</th>
-            <th className="border px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProducts.map((product) => (
-            <tr key={product.id}>
-              <td className="border px-4 py-2">{product.id}</td>
-              <td className="border px-4 py-2">
-                <img src={product.image} alt={product.name} className="w-16 h-16 object-cover" />
-              </td>
-              <td className="border px-4 py-2">{product.name}</td>
-              <td className="border px-4 py-2">{product.category}</td>
-              <td className="py-3 px-4 border-b">Rs.{Number(product.price).toFixed(2)}</td>
-              <td className="border px-4 py-2">{product.stock}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEditProduct(product.id)}
-                  className="text-blue-600 hover:underline"
-                >
-                  <FaEdit size={20} />
-                </button>
-                <button
-                  onClick={() => handleDeleteProduct(product.id)}
-                  className="text-red-600 hover:underline ml-2"
-                >
-                  <FaTrashAlt size={20}/> 
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md w-full sm:w-3/4 lg:w-1/2">
+            <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
+            <form onSubmit={handleUpdateProduct}>
+              <input
+                type="text"
+                name="name"
+                value={state.newProduct.name}
+                onChange={handleInputChange}
+                placeholder="Name"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input
+                type="text"
+                name="productId"
+                value={state.newProduct.productId}
+                onChange={handleInputChange}
+                placeholder="Product ID"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input
+                type="text"
+                name="category"
+                value={state.newProduct.category}
+                onChange={handleInputChange}
+                placeholder="Category"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input
+                type="number"
+                name="price"
+                value={state.newProduct.price}
+                onChange={handleInputChange}
+                placeholder="Price"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input
+                type="number"
+                name="originalprice"
+                value={state.newProduct.originalprice}
+                onChange={handleInputChange}
+                placeholder="Original Price"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input
+                type="number"
+                name="stock"
+                value={state.newProduct.stock}
+                onChange={handleInputChange}
+                placeholder="Stock"
+                className="w-full border p-2 rounded mb-4"
+              />
 
-      <Popup open={showEditModal} onClose={() => setShowEditModal(false)}>
-  <div className="p-4 bg-white shadow-md rounded-lg">
-    <h2 className="text-2xl font-bold">Edit Product</h2>
-    <form onSubmit={handleUpdateProduct}>
-      <div className="grid grid-cols-2 gap-4">
-        
-        <label className="text-gray-600 font-semibold">
-          Product ID
-          <input
-            type="text"
-            name="id"
-            placeholder="Product ID"
-            value={newProduct.id}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-        
-        <label className="text-gray-600 font-semibold">
-          Product Name
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={newProduct.name}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
+              <input
+                type="number"
+                name="quantity"
+                value={state.newProduct.quantity}
+                onChange={handleInputChange}
+                placeholder="Quantity"
+                className="w-full border p-2 rounded mb-4"
+              />
 
-        <label className="text-gray-600 font-semibold">
-          Category
-          <input
-            type="text"
-            name="category"
-            placeholder="Category"
-            value={newProduct.category}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold">
-          Price
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={newProduct.price}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold">
-          Stock
-          <input
-            type="number"
-            name="stock"
-            placeholder="Stock"
-            value={newProduct.stock}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold">
-          Image
-          <input
-            type="file"
-            name="image"
-            onChange={handleImageChange}
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold">
-          Quantity
-          <input
-            type="text"
-            name="quantity"
-            placeholder="Quantity"
-            value={newProduct.quantity}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold">
-          Original Price
-          <input
-            type="number"
-            name="originalPrice"
-            placeholder="Original Price"
-            value={newProduct.originalPrice}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          />
-        </label>
-
-        <label className="text-gray-600 font-semibold col-span-2">
-          Product Details
-          <textarea
-            name="productDetails"
-            placeholder="Product Details"
-            value={newProduct.productDetails}
-            onChange={handleInputChange}
-            required
-            className="p-2 border rounded-md w-full mt-1 text-black"
-          ></textarea>
-        </label>
-      </div>
-      <button
-        type="submit"
-        className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
-      >
-        Update Product
-      </button>
-      <button
-        type="button"
-        onClick={() => setShowEditModal(false)}
-        className="bg-gray-300 text-gray-800 py-2 px-4 ml-28 rounded-lg hover:bg-gray-400 transition duration-300"
-      >
-        Cancel
-      </button>
-    </form>
-  </div>
-</Popup>
-
+              <textarea
+                name="productDetails"
+                value={state.newProduct.productDetails}
+                onChange={handleInputChange}
+                placeholder="Product Details"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <input type="file" onChange={handleImageChange} className="w-full" />
+              {state.imagePreview && (
+                <img
+                  src={state.imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover mt-2"
+                />
+              )}
+              <button
+                type="submit"
+                className="bg-blue-500 text-white p-2 rounded-lg w-full"
+                disabled={state.loading}
+              >
+                {state.loading ? 'Updating Product...' : 'Update Product'}
+              </button>
+            </form>
+            <button
+              onClick={handleModalClose}
+              className="bg-gray-500 text-white p-2 rounded-lg w-full mt-4"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
