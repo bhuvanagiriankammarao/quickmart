@@ -1,5 +1,5 @@
 import React from 'react';
-import { dashboardData } from '../data';
+import { dashboardData } from '../../data/index';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 // Sample data for Categories
@@ -29,17 +29,13 @@ const revenueVsOrdersData = [
 
 const Dashboard = () => {
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen font-poppins">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Welcome Back, Pavan</h2>
       <p className="text-gray-500 mb-8">Be Happy, welcome back pavan</p>
-      
-   
-
-
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-  {/* Average Revenue */}
-  <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-    <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+     {/* Average Revenue */}
+     <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+      <div className="flex items-center justify-between">
       <div>
         <h3 className="text-lg font-semibold">Average Revenue</h3>
         <p className="text-3xl font-bold">{dashboardData.totalSales}</p>
