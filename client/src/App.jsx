@@ -24,6 +24,8 @@ const App = () => {
                   <Navbar />
                   <AppRoutes />
                   <FeaturesSection />
+                  {/* <AddCategory />
+                  <CategoryList /> */}
                   <Footer />
                   <ChatSupport />
                 </>
