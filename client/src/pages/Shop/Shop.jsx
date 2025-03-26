@@ -1,20 +1,19 @@
-import React from 'react'
-import Shopbanner from '../../section/Shop/Shopbanner'
-import ShopProducts from '../../section/Shop/ShopProducts'
+import React from "react";
+import Shopbanner from "../../section/Shop/Shopbanner";
+import ShopProducts from "../../section/Shop/ShopProducts";
 
 const Shop = () => {
   return (
     <>
-    <div>
-    <Shopbanner />
-    </div>
+      <div className=" pt-[80px] max-sm:hidden">
+        <Shopbanner />
+      </div>
 
-    <div>
-      <ShopProducts />
-    </div>
-   
+      <div>
+        <ShopProducts />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Shop
+export default Shop;

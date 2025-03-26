@@ -1,25 +1,30 @@
 import React from 'react';
 import { RiAdminFill } from "react-icons/ri";
-import { MdOutlineDashboardCustomize } from "react-icons/md";
+import { MdOutlineDashboardCustomize, MdClose } from "react-icons/md";
 import { FaBagShopping } from "react-icons/fa6";
 import { PiShoppingBagFill } from "react-icons/pi";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MdCategory } from "react-icons/md";
 import { AiOutlineTeam } from "react-icons/ai";
-
 import { FaUserShield } from "react-icons/fa6";
+import { FaPercentage } from "react-icons/fa";
+import { FaShoppingBasket } from "react-icons/fa";
+import { MdOutlinePayment } from "react-icons/md";
+
 
 const adminSidebarMenuItems = [
     { id: "dashboard", label: "Dashboard", path: "/admin/dashboard", icon: <MdOutlineDashboardCustomize /> },
     { id: "products", label: "Products", path: "/admin/products", icon: <FaBagShopping /> },
     { id: "categories", label: "Categories", path: "/admin/categories", icon: <MdCategory /> },
+    { id: "subcategories", label: "SubCategories", path: "/admin/subcategories", icon: <FaShoppingBasket /> },
     { id: "orders", label: "Orders", path: "/admin/orders", icon: <PiShoppingBagFill /> },
     { id: "usermanagement", label: "Users", path: "/admin/users", icon: <FaUserShield /> },
-    { id: "voucher", label: "Voucher", path: "/admin/voucher", icon: <FaUserShield /> },
-    { id: "chat", label: "chat", path: "/admin/chat", icon: <AiOutlineTeam /> },
-    { id: "calendar", label: "Calendar", path: "/admin/calendar", icon: <FaRegCalendarAlt /> },
-
+    { id: "voucher", label: "Voucher", path: "/admin/voucher", icon: <FaPercentage /> },
+    // { id: "banner", label: "Banner", path: "/admin/banner", icon: <BsImageFill /> },
+    // { id: "chat", label: "Chat", path: "/admin/chat", icon: <AiOutlineTeam /> },
+    { id: "paymentdetails", label: "PaymentDetails", path: "/admin/payment-details", icon: <MdOutlinePayment /> },
+    // { id: "calendar", label: "Calendar", path: "/admin/calendar", icon: <FaRegCalendarAlt /> },
 ];
 
 const MenuItems = ({ setOpen }) => {
@@ -43,7 +48,7 @@ const MenuItems = ({ setOpen }) => {
                         }`}
                 >
                     {menuItem.icon}
-                    <span>{menuItem.label}</span>
+                    <span className=' max-md:text-base'>{menuItem.label}</span>
                 </div>
             ))}
         </nav>
@@ -53,16 +58,27 @@ const MenuItems = ({ setOpen }) => {
 const AdminSideBar = ({ open, setOpen }) => {
     return (
         <aside
-            className={`${
-                open ? 'block' : 'hidden lg:flex'
-            } fixed inset-0 z-20 lg:z-auto lg:relative lg:w-64 flex-col border-r
-             bg-white text-gray-700 p-6`}
-            onClick={() => setOpen(false)}
+            className={`fixed inset-0 z-20 transform bg-white text-gray-700 border-r
+                transition-transform lg:relative lg:transform-none lg:w-64
+                ${open ? 'translate-x-0' : '-translate-x-full'}
+            `}
         >
-            <div className="flex items-center gap-2 pl-5">
-                <RiAdminFill size={24} />
-                <h1 className="text-2xl font-extrabold">Admin Panel</h1>
+            {/* Sidebar Header */}
+            <div className="flex items-center gap-5 p-[14px] border-b">
+            <button
+                    className="lg:hidden text-gray-600 hover:text-gray-900"
+                    onClick={() => setOpen(false)}
+                >
+                    <MdClose size={24} />
+                </button>
+                <div className="flex items-center gap-2">
+                    <RiAdminFill size={24} />
+                    <h1 className=" text-2xl font-extrabold
+                     max-lg:text-lg">Admin Panel</h1>
+                </div>
+
             </div>
+            {/* Sidebar Menu */}
             <MenuItems setOpen={setOpen} />
         </aside>
     );

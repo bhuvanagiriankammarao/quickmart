@@ -4,11 +4,11 @@ import OrderPlacedBanner from '../../section/OrderPlaced/OrderPlacedBanner';
 
 const OrderPlaced = () => {
    
-        const userEmail = "johnkevin@gmail.com"; // Replace with dynamic email if available
-        const userPhone = "90123456789"; // Replace with dynamic phone number if available
+        const userEmail = "johnkevin@gmail.com"; 
+        const userPhone = "90123456789"; 
       
   return (
-    <div>
+    <div className=' pt-24'>
       <OrderPlacedBanner />
           <div className="flex items-center justify-center  bg-gray-100 p-4 sm:p-6">
     <main className="bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-xl h-full sm:h-auto max-h-screen text-center overflow-auto">

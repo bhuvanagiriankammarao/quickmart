@@ -47,7 +47,7 @@ export const ourProducts = [
       name: "Avocado",
       quantity: "Avocado 1 piece (150g)",
       price:  89,
-      orignalPrice: 123,
+      orignalprice: 123,
       ProductDetails:"jhfgduifguigvb"
   },
   {
@@ -56,7 +56,7 @@ export const ourProducts = [
       name: "Fortune",
       quantity: "Fortune Besan 1kg",
       price: 150,
-      orignalPrice: 190
+      orignalprice: 190
   },
 
   {
@@ -143,7 +143,7 @@ export const footerLinks = [
   {
       title: "links",
       links: [
-          { name: "Home", link: "/home" },
+          { name: "Home", link: "/" },
           { name: "Shop", link: "/shop" },
           { name: "About", link: "/about" },
           { name: "Contact", link: "/contact" },

@@ -18,16 +18,12 @@ const Team = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewMember({ ...newMember, [name]: value });
-  };
-
-  // Add a new member
-  const handleAddMember = (e) => {
-    e.preventDefault();
-    setTeam([
+  };// Add a new member
+  const handleAddMember = (e) => {e.preventDefault();
+   setTeam([
       ...team,
-      { ...newMember, id: team.length + 1 },
-    ]);
-    setNewMember({ name: '', role: '', email: '', joined: new Date().toLocaleDateString() });
+      { ...newMember, id: team.length + 1 }    ]);
+setNewMember({ name: '', role: '', email: '', joined: new Date().toLocaleDateString() });
     setShowAddMemberForm(false);
   };
 
@@ -43,10 +39,10 @@ const Team = () => {
         <button
           className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-300"
           onClick={() => setShowAddMemberForm(!showAddMemberForm)}
-        >
-          + Add Team Member
+ >
+        + Add Team Member
         </button>
-      </div>
+ </div>
 
       {/* Add Team Member Form */}
       {showAddMemberForm && (
@@ -54,10 +50,10 @@ const Team = () => {
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
-              name="name"
+  name="name"
               placeholder="Member Name"
               value={newMember.name}
-              onChange={handleInputChange}
+  onChange={handleInputChange}
               required
               className="p-2 border rounded-md"
             />

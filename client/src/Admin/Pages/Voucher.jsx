@@ -119,7 +119,7 @@ const Voucher = () => {
           <p className="text-gray-500 mb-4">Associate vouchers with specific products or categories.</p>
           <div className="bg-gray-50 p-6 rounded-lg shadow">
             <p className="text-gray-600">Implement functionality here to select products or categories and apply voucher discounts.</p>
-            {/* This section can include dropdowns or other UI to select products or categories */}
+
           </div>
         </section>
       </div>

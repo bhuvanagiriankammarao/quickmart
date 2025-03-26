@@ -1,91 +1,123 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ourProducts } from '../data'; // Adjust the path as needed
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { add } from '../store/cartSlice';
+import { addToWishlist, removeFromWishlist } from '../store/wishlistSlice';
+import { BsFillCartCheckFill } from 'react-icons/bs';
+import { FaHeart } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 
 const ProductDetails = () => {
   const { productId } = useParams();
-  const product = ourProducts.find((item) => item.id === parseInt(productId));
-  const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState('1kg');
+  const dispatch = useDispatch();
+  // const wishlist = useSelector((state) => state.wishlist); 
+  const wishlist = useSelector((state) => state.wishlist.items);
+
+   
+  const [product, setProduct] = useState(null);
+  const [notification, setNotification] = useState({ visible: false, productName: '' });
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/products/${productId}`);
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      }
+    };
+
+    fetchProductDetails();
+  }, [productId]);
 
   if (!product) {
-    return <p>Product not found!</p>;
+    return <p>Loading...</p>;
   }
 
-  const handleQuantityChange = (action) => {
-    if (action === 'increment') setQuantity(quantity + 1);
-    if (action === 'decrement' && quantity > 1) setQuantity(quantity - 1);
+  const isWishlisted = wishlist.some((item) => item.productId === product.productId);
+
+  const handleWishlist = () => {
+    const wishlistItem = { ...product, imgURL: product.image };
+    if (isWishlisted) {
+      dispatch(removeFromWishlist(wishlistItem));
+    } else {
+      dispatch(addToWishlist(wishlistItem));
+    }
+  };
+
+  const addToCart = () => {
+    dispatch(add(product));
+    showNotification(product.name);
+  };
+
+  const showNotification = (productName) => {
+    setNotification({ visible: true, productName });
+    setTimeout(() => setNotification({ visible: false, productName: '' }), 3000);
   };
 
   return (
-    <div className="flex flex-wrap p-10 gap-8">
-      {/* Product Images */}
-      <div className="flex flex-col gap-4 w-1/3">
-        <div className="flex flex-col gap-2">
-          {Array.isArray(product.imageGallery) &&
-            product.imageGallery.map((img, idx) => (
-              <img key={idx} src={img} alt={product.name} className="w-20 h-20 object-cover rounded-lg" />
-            ))}
+    <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 
+    font-poppins pt-28">
+      {/* Image section */}
+      <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col space-y-4">
+          <img src={product.image} alt={product.name} className="w-full h-96 object-cover rounded-lg shadow-md" />
+          <div className="flex gap-4">
+            <img src={product.image} alt="Variant" className="w-20 h-20 object-cover rounded-lg border" />
+            <img src={product.image} alt="Variant" className="w-20 h-20 object-cover rounded-lg border" />
+            <img src={product.image} alt="Variant" className="w-20 h-20 object-cover rounded-lg border" />
+          </div>
         </div>
-        <img src={product.imgURL} alt={product.name} className="w-full h-80 object-cover rounded-lg" />
       </div>
 
-      {/* Product Details */}
-      <div className="w-2/3">
+      {/* Details section */}
+      <div className="space-y-6">
         <h1 className="text-3xl font-semibold">{product.name}</h1>
-        <p className="text-xl font-semibold text-gray-800 mt-2">Rs. {product.price}</p>
-        <div className="flex items-center mt-2">
-          <div className="flex items-center text-yellow-500">
-            {[...Array(5)].map((_, i) => (
-              <span key={i}>&#9733;</span> // Star icon
-            ))}
-          </div>
-          <p className="ml-2 text-gray-500">5 Customer Reviews</p>
+        <p className="text-gray-600">{product.productDetails}</p>
+        <div className=' flex space-x-3 items-center '>
+        <p className="text-2xl font-bold text-gray-900">Rs. {product.price}</p>
+        <p className="text-xl  text-gray-500 line-through">Rs. {product.originalprice}</p>
+
         </div>
-
-        <p className="text-gray-700 mt-4">{product.ProductDetails}</p>
-
-        {/* Variant Options */}
-        <div className="flex gap-2 mt-4">
-          {['500 gm', '1 kg', '2 kg'].map((variant) => (
-            <button
-              key={variant}
-              onClick={() => setSelectedVariant(variant)}
-              className={`px-3 py-1 border rounded-md ${
-                selectedVariant === variant ? 'border-black' : 'border-gray-300'
-              }`}
-            >
-              {variant}
-            </button>
-          ))}
-        </div>
-
-        {/* Quantity Selector */}
-        <div className="flex items-center gap-4 mt-4">
-          <button onClick={() => handleQuantityChange('decrement')} className="text-2xl border p-2 rounded-md">
-            -
+        
+        <div className="flex space-x-4 ">
+          <button
+            onClick={addToCart}
+            className="  px-6 py-3  shadow
+             hover:bg-orange-600 transition-all 
+             text-white font-semibold mb-4 bg-orangeCustom w-40 h-12 rounded-lg
+              group-hover:opacity-100 "
+          >
+            Add to Cart
           </button>
-          <span className="text-xl">{quantity}</span>
-          <button onClick={() => handleQuantityChange('increment')} className="text-2xl border p-2 rounded-md">
-            +
+          <button
+            onClick={handleWishlist}
+            className={`flex items-center space-x-2 ${
+              isWishlisted ? 'text-red-500' : 'text-gray-500'
+            } hover:text-red-600 transition-all`}
+          >
+            <FaHeart />
+            <span>{isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}</span>
           </button>
-          <button className="bg-black text-white px-6 py-2 rounded-md">Add To Cart</button>
         </div>
-
-        {/* Additional Information */}
-        <div className="mt-6">
-          <p><span className="font-semibold">SKU:</span> SS001</p>
-          <p><span className="font-semibold">Category:</span> Fruits & Vegetables</p>
-          <p><span className="font-semibold">Tags:</span> Fruits, Avocado, Fresh Fruits</p>
-
-          {/* Share Icons (Example with Font Awesome icons) */}
-          <div className="flex gap-4 mt-4">
-            <a href="#" className="text-gray-500 hover:text-gray-700"><i className="fab fa-facebook"></i></a>
-            <a href="#" className="text-gray-500 hover:text-gray-700"><i className="fab fa-twitter"></i></a>
-            <a href="#" className="text-gray-500 hover:text-gray-700"><i className="fab fa-instagram"></i></a>
+        <div className="pt-4">
+          <span className="font-semibold">Share:</span>
+          <div className="flex space-x-4 mt-2">
+            <FaFacebook className="text-blue-600 cursor-pointer hover:text-blue-800" />
+            <FaTwitter className="text-blue-400 cursor-pointer hover:text-blue-600" />
+            <FaInstagram className="text-pink-500 cursor-pointer hover:text-pink-700" />
           </div>
         </div>
       </div>
+      {notification.visible && (
+        <div className="fixed top-4 right-1/3 bg-green-600 text-white py-3 px-6 rounded-xl shadow-lg text-lg font-bold animate-slide-down">
+          <p className="flex items-center gap-2">
+            <BsFillCartCheckFill className="animate-pulse" />
+            {notification.productName} added to cart!
+          </p>
+        </div>
+      )}
     </div>
   );
 };
