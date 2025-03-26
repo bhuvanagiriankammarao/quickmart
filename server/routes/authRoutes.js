@@ -1,9 +1,22 @@
-const express = require('express');
-const { registerUser } = require('../controllers/userController');
+import express from "express";
+import { registerUser, loginUser, getUserCoinsByEmail, getAllUsers, getTotalUsers } from "../controllers/userController.js";
 
 const router = express.Router();
 
-// Registration route
-router.post('/register', registerUser);
+// Register user
+router.post("/register", registerUser);
 
-module.exports = router;
+// Login user
+router.post("/login", loginUser);
+
+// Fetch wallet coins by email
+router.get("/coins/:email", getUserCoinsByEmail);
+
+// fetch users
+router.get("/users", getAllUsers);
+
+// Fetch total number of users
+router.get("/total-users", getTotalUsers);
+
+
+export default router;

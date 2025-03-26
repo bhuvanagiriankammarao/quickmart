@@ -1,94 +1,43 @@
 import React from 'react';
 import { dashboardData } from '../../data/index';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import LowStockProducts from '../components/LowStockProducts';
+import AverageRevenue from '../components/Dashboard/AverageRevenue';
+import TotalOrders from '../components/Dashboard/TotalOrders';
+import RevenueVsOrdersChart from '../components/Dashboard/RevenueVsOrdersChart';
+import TotalCustomers from '../components/Dashboard/TotalCustomers';
 
 // Sample data for Categories
-const salesByCategoryData = [
-  { name: 'Fruits & Vegetables', value: 22, color: '#4f46e5' },
-  { name: 'Dairy & Bakery', value: 20, color: '#10b981' },
-  { name: 'Food grain, Oil & Masala', value: 7, color: '#f97316' },
-  { name: 'Biscuits & Cookies', value: 34, color: '#3b82f6' },
-  { name: 'Hair Care', value: 17, color: '#ef4444' },
-];
+// const salesByCategoryData = [
+//   { name: 'Fruits & Vegetables', value: 22, color: '#4f46e5' },
+//   { name: 'Dairy & Bakery', value: 20, color: '#10b981' },
+//   { name: 'Food grain, Oil & Masala', value: 7, color: '#f97316' },
+//   { name: 'Biscuits & Cookies', value: 34, color: '#3b82f6' },
+//   { name: 'Hair Care', value: 17, color: '#ef4444' },
+// ];
 
-// Sample data for Revenue vs Order
-const revenueVsOrdersData = [
-  { name: 'Jan', Revenue: 450, Order: 200 },
-  { name: 'Feb', Revenue: 700, Order: 300 },
-  { name: 'Mar', Revenue: 600, Order: 250 },
-  { name: 'Apr', Revenue: 800, Order: 400 },
-  { name: 'May', Revenue: 650, Order: 350 },
-  { name: 'Jun', Revenue: 900, Order: 500 },
-  { name: 'Jul', Revenue: 1200, Order: 600 },
-  { name: 'Aug', Revenue: 850, Order: 400 },
-  { name: 'Sep', Revenue: 950, Order: 450 },
-  { name: 'Oct', Revenue: 1100, Order: 550 },
-  { name: 'Nov', Revenue: 1050, Order: 500 },
-  { name: 'Dec', Revenue: 1150, Order: 600 },
-];
+
 
 const Dashboard = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen font-poppins">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">Welcome Back, Pavan</h2>
-      <p className="text-gray-500 mb-8">Be Happy, welcome back pavan</p>
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Welcome Back, Admin</h2>
+      <p className="text-gray-500 mb-8">Be Happy, welcome back Admin</p>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
      {/* Average Revenue */}
-     <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-      <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-semibold">Average Revenue</h3>
-        <p className="text-3xl font-bold">{dashboardData.totalSales}</p>
-      </div>
-      <div className="text-4xl opacity-50">
-        <i className="fas fa-dollar-sign"></i> {/* Or use an SVG icon */}
-      </div>
-    </div>
-  </div>
+  <AverageRevenue />
 
   {/* Total Orders */}
-  <div className="p-6 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-semibold">Total Orders</h3>
-        <p className="text-3xl font-bold">{dashboardData.totalOrders}</p>
-      </div>
-      <div className="text-4xl opacity-50">
-        <i className="fas fa-shopping-cart"></i>
-      </div>
-    </div>
-  </div>
-
+  <TotalOrders />
   {/* Total Customers */}
-  <div className="p-6 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-semibold">Total Customers</h3>
-        <p className="text-3xl font-bold">{dashboardData.totalCustomers}</p>
-      </div>
-      <div className="text-4xl opacity-50">
-        <i className="fas fa-users"></i>
-      </div>
-    </div>
-  </div>
-
+  <TotalCustomers />
   {/* Low Stock Products */}
-  <div className="p-6 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-semibold">Low Stock Products</h3>
-        <p className="text-3xl font-bold">{dashboardData.lowStockProducts}</p>
-      </div>
-      <div className="text-4xl opacity-50">
-        <i className="fas fa-box-open"></i>
-      </div>
-    </div>
-  </div>
+<LowStockProducts />
 </div>
 
 
       {/* Revenue vs Orders Chart */}
-      <div className="p-6 bg-white rounded-lg shadow-md mb-8">
+      {/* <div className="p-6 bg-white rounded-lg shadow-md mb-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Revenue vs Order</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={revenueVsOrdersData}>
@@ -117,10 +66,12 @@ const Dashboard = () => {
             <Tooltip contentStyle={{ backgroundColor: '#f9fafb', borderColor: '#d1d5db' }} />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
+
+      <RevenueVsOrdersChart />
 
       {/* Sales by Category Donut Chart */}
-      <div className="p-6 bg-white rounded-lg shadow-md mb-8">
+      {/* <div className="p-6 bg-white rounded-lg shadow-md mb-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Sales by Category</h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
@@ -145,7 +96,7 @@ const Dashboard = () => {
             align="center" />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
 
       {/* Recent Orders Table */}
       <div className="p-6 bg-white rounded-lg shadow-md mb-8">

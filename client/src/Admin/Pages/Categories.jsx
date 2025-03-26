@@ -1,217 +1,128 @@
-import React, { useState } from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { categoryData } from '../../data/index';
-import Popup from 'reactjs-popup';
-import 'reactjs-popup/dist/index.css';
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchCategories,
+  addNewCategory,
+  updateExistingCategory,
+  removeCategory,
+  clearNotification,
+} from "../../store/categorySlice";
+import CategoryList from "../components/CategoryList";
+import CategoryForm from "../components/CategoryForm";
 
 const Categories = () => {
-  const [categories, setCategories] = useState(categoryData);
-  const [newCategory, setNewCategory] = useState({
-    name: '',
-    sold: '',
-    stock: '',
-    added: new Date().toLocaleDateString(),
-  });
+  const dispatch = useDispatch();
+  const { categories, loading, notification } = useSelector(
+    (state) => state.categories
+  );
+
+  const [editingCategory, setEditingCategory] = useState(null);
   const [showAddCategoryForm, setShowAddCategoryForm] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [currentCategoryId, setCurrentCategoryId] = useState(null);
-  const [notification, setNotification] = useState({ visible: false, message: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCategory({ ...newCategory, [name]: value });
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (notification) {
+      setTimeout(() => dispatch(clearNotification()), 3000);
+    }
+  }, [notification, dispatch]);
+
+  const handleAddCategory = async (formData) => {
+    setActionLoading(true);
+    await dispatch(addNewCategory(formData));
+    setActionLoading(false);
   };
 
-  const handleAddCategory = (e) => {
-    e.preventDefault();
-    setCategories([
-      ...categories,
-      { ...newCategory, id: categories.length + 1 },
-    ]);
-    setNotification({ visible: true, message: `Category '${newCategory.name}' added successfully!` });
-    setNewCategory({ name: '', sold: '', stock: '', added: new Date().toLocaleDateString() });
-    setShowAddCategoryForm(false);
-    hideNotification();
+  const handleUpdateCategory = async (id, formData) => {
+    setActionLoading(true);
+    await dispatch(updateExistingCategory({ id, categoryData: formData }));
+    setActionLoading(false);
+    closeModal();
   };
 
-  const handleEditCategory = (id) => {
-    const categoryToEdit = categories.find(category => category.id === id);
-    setNewCategory(categoryToEdit);
-    setCurrentCategoryId(id);
-    setShowEditModal(true);
+  const handleDeleteCategory = async (id, name) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete category "${name}"?`
+    );
+    if (!confirmed) return;
+
+    setActionLoading(true);
+    await dispatch(removeCategory({ id, name }));
+    setActionLoading(false);
   };
 
-  const handleUpdateCategory = (e) => {
-    e.preventDefault();
-    setCategories(categories.map(category => 
-      category.id === currentCategoryId ? { ...newCategory, id: currentCategoryId } : category
-    ));
-    setNotification({ visible: true, message: `Category '${newCategory.name}' updated successfully!` });
-    setShowEditModal(false);
-    hideNotification();
+  const openEditModal = (category) => {
+    setEditingCategory(category);
+    setIsModalOpen(true);
   };
 
-  const handleDeleteCategory = (id) => {
-    const deletedCategory = categories.find((category) => category.id === id);
-    setCategories(categories.filter((category) => category.id !== id));
-    setNotification({ visible: true, message: `Category '${deletedCategory.name}' deleted successfully!` });
-    hideNotification();
-  };
-
-  const hideNotification = () => {
-    setTimeout(() => {
-      setNotification({ visible: false, message: '' });
-    }, 3000);
+  const closeModal = () => {
+    setEditingCategory(null);
+    setIsModalOpen(false);
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen font-poppins">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Categories</h2>
+    <div className="container mx-auto p-4 font-poppins">
+      {notification && (
+        <div className="fixed top-4 right-96 bg-green-600 text-white py-3 px-6 rounded-xl shadow-lg">
+          {notification}
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold mb-4">Category Management</h1>
+
         <button
-          className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-300"
           onClick={() => setShowAddCategoryForm(!showAddCategoryForm)}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-500 transition"
         >
-          + Add Category
+          {showAddCategoryForm ? "Close Form" : "+ Add Category"}
         </button>
       </div>
 
-      {showAddCategoryForm && (
-        <form onSubmit={handleAddCategory} className="mb-6 p-4 bg-white shadow-md rounded-lg">
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Category Name"
-              value={newCategory.name}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="number"
-              name="sold"
-              placeholder="Sold Quantity"
-              value={newCategory.sold}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="number"
-              name="stock"
-              placeholder="Stock"
-              value={newCategory.stock}
-              onChange={handleInputChange}
-              required
-              className="p-2 border rounded-md"
-            />
+      {/* Show loading spinner for actions */}
+      {actionLoading && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-100 bg-opacity-50 z-50">
+          <div className="flex flex-col justify-center items-center">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="mt-4 text-blue-500">Processing...</span>
           </div>
-          <button
-            type="submit"
-            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
-          >
-            Add Category
-          </button>
-        </form>
+        </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700">
-              <th className="py-3 px-4 border-b-2 text-left">Category Name</th>
-              <th className="py-3 px-4 border-b-2 text-left">Sold</th>
-              <th className="py-3 px-4 border-b-2 text-left">Stock</th>
-              <th className="py-3 px-4 border-b-2 text-left">Added</th>
-              <th className="py-3 px-4 border-b-2 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category.id} className="hover:bg-gray-50">
-                <td className="py-3 px-4 border-b">{category.name}</td>
-                <td className="py-3 px-4 border-b">{category.sold}</td>
-                <td className="py-3 px-4 border-b">{category.stock}</td>
-                <td className="py-3 px-4 border-b">{category.added}</td>
-                <td className="py-3 px-4 border-b text-center">
-                  <button
-                    onClick={() => handleEditCategory(category.id)}
-                    className="text-blue-600 hover:text-blue-800 px-3 py-1"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCategory(category.id)}
-                    className="text-red-600 hover:text-red-800 px-3 py-1"
-                  >
-                    <FaTrashAlt />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {showAddCategoryForm && (
+        <CategoryForm
+          onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory}
+          editingCategory={editingCategory}
+          setEditingCategory={setEditingCategory}
+        />
+      )}
 
-      <Popup open={showEditModal} onClose={() => setShowEditModal(false)}>
-        <div className="p-4 bg-white shadow-md rounded-lg">
-          <h2 className="text-2xl font-bold">Edit Category</h2>
-          <form onSubmit={handleUpdateCategory}>
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                name="name"
-                placeholder="Category Name"
-                value={newCategory.name}
-                onChange={handleInputChange}
-                required
-                className="p-2 border rounded-md"
-              />
-              <input
-                type="number"
-                name="sold"
-                placeholder="Sold Quantity"
-                value={newCategory.sold}
-                onChange={handleInputChange}
-                required
-                className="p-2 border rounded-md"
-              />
-              <input
-                type="number"
-                name="stock"
-                placeholder="Stock"
-                value={newCategory.stock}
-                onChange={handleInputChange}
-                required
-                className="p-2 border rounded-md"
-              />
-            </div>
-            <button
-              type="submit"
-              className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
-            >
-              Update Category
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowEditModal(false)}
-              className="bg-gray-300 text-gray-800 py-2 px-4 ml-4 rounded-lg hover:bg-gray-400 transition duration-300"
-            >
-              Cancel
-            </button>
-          </form>
-        </div>
-      </Popup>
+      <CategoryList
+        categories={categories}
+        onDelete={handleDeleteCategory}
+        onEdit={openEditModal}
+      />
 
-      {notification.visible && (
-        <div className="fixed top-4 right-[26rem] items-center bg-gradient-to-r
-         from-green-400 to-green-600 text-white py-3 px-6 rounded-xl shadow-xl
-          flex  space-x-3 transition-transform transform-gpu duration-300 ease-out animate-bounce">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 4h-5.586l-2-2H7v5.586L5 9.586V20h14V4z" />
-          </svg>
-          <span className="font-semibold">{notification.message}</span>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Edit Category</h2>
+            <CategoryForm
+              onSubmit={handleUpdateCategory}
+              editingCategory={editingCategory}
+            />
+            <button
+              onClick={closeModal}
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

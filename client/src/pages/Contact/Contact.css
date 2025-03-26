@@ -1,50 +1,171 @@
-/* src/pages/Contact.css */
-
+/* Contact.css */
 .contact-container {
-    background-color: #f3f4f6; /* Background color */
-    color: white;
-    padding: 2.5rem; /* Tailwind's p-10 */
-    width: 100%; /* Full width */
-    height: 100vh; /* Full height of the viewport */
-    display: flex; /* Enable flexbox */
-    flex-direction: column; /* Align children in a column */
-    align-items: center; /* Center content horizontally */
-    justify-content: center; /* Center content vertically */
-    background-image: url('C:\QuickMart\client\src\assets\images\bg.jpg');
-    
+    background: #f1f1f1;
+    padding: 4rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.contact-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 1200px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.contact-content:hover {
+    transform: scale(1.02);
+}
+
+@media (min-width: 768px) {
+    .contact-content {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 .contact-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Create responsive columns */
-    gap: 1rem; /* Tailwind's gap-4 */
-}
-
-.contact-form {
-    background-color: #d1fae5; /* Tailwind's blue-500 */
-    margin-top: 2.5rem; /* Tailwind's mt-10 */
-    padding: 8rem; /* Increased padding for more space */
-    border-radius: 0.75rem; /* Slightly larger corner radius for better aesthetics */
-    width: 100%; /* Ensure the form takes full width */
-    max-width: 600px; /* Increased max width to make the box larger */
-}
-
-
-.contact-form input {
-    border: 1px solid #cbd5e1; /* Tailwind's border-gray-400 */
-    padding: 0.5rem; /* Tailwind's p-2 */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     width: 100%;
+    max-width: 500px;
+    animation: slideIn 0.8s ease-out;
 }
 
-.contact-form button {
-    background-color: white;
-    color: #1f2937; /* Tailwind's gray-800 */
-    font-weight: bold;
-    padding: 0.5rem 1rem; /* Tailwind's py-2 px-4 */
-    border-radius: 0.25rem; /* Tailwind's rounded */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Shadow effect */
+.info-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.contact-form button:hover {
-    background-color: #f3f4f6; /* Tailwind's gray-100 */
+.info-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #3b82f6;
+    transition: transform 0.3s ease;
+}
+
+.info-box:hover .icon {
+    transform: rotate(15deg);
+}
+
+.contact-form-container {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+.contact-form .form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4a4a4a;
+    margin-bottom: 0.5rem;
+    display: block;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+    animation-delay: 0.3s;
+}
+
+.contact-form .form-input,
+.contact-form .form-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.8s ease forwards;
+    animation-delay: 0.4s;
+}
+
+.contact-form .form-input:focus,
+.contact-form .form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0px 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.contact-form .form-textarea {
+    min-height: 150px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    animation: fadeInUp 0.8s ease forwards;
+    animation-delay: 0.5s;
+}
+
+.submit-button:hover {
+    background-color: #2563eb;
+    transform: scale(1.05);
+}
+
+.submit-button:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

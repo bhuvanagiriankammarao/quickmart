@@ -30,7 +30,7 @@ const HomeCategories = () => {
             className="flex flex-col items-center p-4 rounded-lg mb-8 md:mb-0"
           >
             {/* Category Image */}
-            <Link to={`/category/${category.id}`}>
+            <Link  to={`/category/${category.id}`} onClick={scrollToTop}>
               <img 
                 src={category.imgURL} 
                 alt={category.title} 

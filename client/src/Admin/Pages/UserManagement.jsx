@@ -1,161 +1,146 @@
-// src/components/UserManagement.js
-
-import React, { useState } from 'react';
-import { ordersData } from '../../data/index';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const UserManagement = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null); // For selected order details
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Arjun Reddy', status: 'Active' },
-    { id: 2, name: 'Anita Desai', status: 'Active' },
-    { id: 3, name: 'Ravi Kumar', status: 'Blocked' },
-    { id: 4, name: 'Manoj Gupta', status: 'Blocked' },
-    { id: 5, name: 'Pooja Sharma', status: 'Active' },
-    { id: 6, name: 'Rahul Verma', status: 'Blocked' },
-    { id: 7, name: 'Priya Menon', status: 'Active' },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedUserEmail, setSelectedUserEmail] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const toggleUserStatus = (userId) => {
-    setUsers(users.map(user =>
-      user.id === userId
-        ? { ...user, status: user.status === 'Active' ? 'Blocked' : 'Active' }
-        : user
-    ));
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/users");
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const fetchOrdersByEmail = async (email) => {
+    setLoading(true);
+    setError("");
+    setOrders([]);
+    try {
+      const response = await axios.get(`http://localhost:5000/api/orders/${email}`);
+      setOrders(response.data);
+      setSelectedUserEmail(email);
+      setIsModalOpen(true);
+    } catch (err) {
+      setError("Failed to fetch orders");
+    }
+    setLoading(false);
   };
 
-  const viewOrders = (userName) => {
-    setSelectedUser(userName);
+  const cancelOrder = async (orderId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/cancel-order/${orderId}`);
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.orderId === orderId ? { ...order, status: "Cancelled" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+    }
   };
-
-  const viewOrderDetails = (order) => {
-    setSelectedOrder(order);
-  };
-
-  const closeModal = () => {
-    setSelectedUser(null);
-    setSelectedOrder(null); // Close both user and order modals
-  };
-
-  const selectedUserOrders = ordersData.filter(order => order.customer === selectedUser);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-semibold mb-4">User Management</h2>
+    <div className="container mx-auto p-6 max-w-6xl bg-white rounded-lg shadow-lg font-poppins">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">User Management</h2>
       
-      <div className="bg-white p-4 shadow-md rounded-lg mb-8">
-        <h3 className="text-lg font-medium mb-3">Users</h3>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr>
-              <th className="p-2 border-b">Name</th>
-              <th className="p-2 border-b">Status</th>
-              <th className="p-2 border-b">Actions</th>
+      <table className="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">User ID</th>
+            <th className="border p-2">Name</th>
+            <th className="border p-2">Email</th>
+            <th className="border p-2">Wallet Coins</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.userId} className="text-center">
+              <td className="border p-2">{user.userId}</td>
+              <td className="border p-2">{user.name}</td>
+              <td className="border p-2">{user.email}</td>
+              <td className="border p-2">{user.wallet?.coins || 0}</td>
+              <td className="border p-2">
+                <button
+                  onClick={() => fetchOrdersByEmail(user.email)}
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                >
+                  View Orders
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td className="p-2 border-b">{user.name}</td>
-                <td className="p-2 border-b">{user.status}</td>
-                <td className="p-2 border-b">
-                  <button
-                    onClick={() => toggleUserStatus(user.id)}
-                    className={`px-3 py-1 mr-2 rounded text-white ${user.status === 'Active' ? 'bg-red-500' : 'bg-green-500'}`}
-                  >
-                    {user.status === 'Active' ? 'Block' : 'Unblock'}
-                  </button>
-                  <button
-                    onClick={() => viewOrders(user.name)}
-                    className="px-3 py-1 rounded bg-blue-500 text-white"
-                  >
-                    View Orders
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Order Details Modal */}
+      <div className="">
+      {isModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 pl-56">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+      <h3 className="text-xl font-bold mb-4 text-center">Order History for {selectedUserEmail}</h3>
+
+      {loading ? (
+        <p className="text-center">Loading orders...</p>
+      ) : error ? (
+        <p className="text-red-500 text-center">{error}</p>
+      ) : orders.length === 0 ? (
+        <p className="text-center">No orders found for this user.</p>
+      ) : (
+        <div className="space-y-4">
+          {orders.map((order) => (
+            <div key={order.orderId} className="border p-4 rounded-lg shadow-sm bg-gray-50">
+              <div className="flex justify-between mb-2">
+                <span className={`text-${order.status === "Paid" ? "green" : "orange"}-600 font-bold uppercase`}>
+                  {order.status}
+                </span>
+                <span className="text-gray-500 text-sm">{new Date(order.createdAt).toLocaleDateString()}</span>
+              </div>
+
+              {/* Enable scroll for items */}
+              <div className="overflow-y-auto max-h-[50vh] pr-2">
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-4 border-b pb-2 last:border-none">
+                    <img src={item.productImage} alt={item.productName} className="w-16 h-16 object-cover rounded-md" />
+                    <div>
+                      <p className="font-semibold text-gray-800">{item.productName}</p>
+                      <p className="text-gray-600">Qty: {item.quantity} | ₹{item.price}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex justify-between text-gray-700">
+                <span className="font-semibold">Total: ₹{order.totalAmount}</span>
+                <span className="text-sm">Order ID: {order.orderId}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Close Button */}
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="mt-4 w-full bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
       </div>
-
-      {/* Modal for User's Orders */}
-      {selectedUser && !selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-3/4 lg:w-1/2 max-h-screen overflow-y-auto">
-            <h3 className="text-lg font-medium mb-3">{selectedUser}'s Orders</h3>
-            {selectedUserOrders.length > 0 ? (
-              <table className="w-full text-left border-collapse mb-4">
-                <thead>
-                  <tr>
-                    <th className="p-2 border-b">Order ID</th>
-                    <th className="p-2 border-b">Date</th>
-                    <th className="p-2 border-b">Amount</th>
-                    <th className="p-2 border-b">Status</th>
-                    <th className="p-2 border-b">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedUserOrders.map((order) => (
-                    <tr key={order.id}>
-                      <td className="p-2 border-b">{order.id}</td>
-                      <td className="p-2 border-b">{order.date} - {order.time}</td>
-                      <td className="p-2 border-b">RS.{order.amount}</td>
-                      <td className="p-2 border-b">{order.status}</td>
-                      <td className="p-2 border-b">
-                        <button
-                          onClick={() => viewOrderDetails(order)}
-                          className="px-3 py-1 rounded bg-green-500 text-white"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-500">No orders found for {selectedUser}.</p>
-            )}
-            <button
-              onClick={closeModal}
-              className="mt-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Modal for Order Details */}
-      {selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-3/4 lg:w-1/2 max-h-screen overflow-y-auto">
-            <h3 className="text-lg font-medium mb-3">Order Details: {selectedOrder.id}</h3>
-            <p><strong>Date:</strong> {selectedOrder.date} - {selectedOrder.time}</p>
-            <p><strong>Status:</strong> {selectedOrder.status}</p>
-            <p><strong>Amount:</strong> RS.{selectedOrder.amount}</p>
-            <p><strong>Address:</strong> {selectedOrder.address}</p>
-            <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
-
-            <h4 className="mt-4 text-lg font-medium">Items:</h4>
-            <ul className="list-disc ml-6">
-              {selectedOrder.items.map((item, index) => (
-                <li key={index} className="my-2">
-                  {item.name} - Quantity: {item.quantity}, Price: ${item.price}
-                </li>
-              ))}
-            </ul>
-
-            <p className="mt-4"><strong>Shipping Fee:</strong> RS.{selectedOrder.shippingFee}</p>
-            <button
-              onClick={closeModal}
-              className="mt-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

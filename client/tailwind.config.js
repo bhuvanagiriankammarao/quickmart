@@ -6,6 +6,7 @@ export default {
   ],
   theme: {
     extend: {
+      
       colors: {
         cloudGray: '#666666',
         stoneGay: '#898989', 
@@ -66,11 +67,51 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: 1 },
         },
       },
-      animation: {
-        fadeIn: 'fadeIn 0.5s ease-out',
-        slideInText: 'slideInText 0.8s ease-out',
+      // animation: {
+      //   fadeIn: 'fadeIn 0.5s ease-out',
+      //   slideInText: 'slideInText 0.8s ease-out',
+      // },
+
+      boxShadow: {
+        xl: "0 10px 20px rgba(0, 0, 0, 0.1)",
+      },
+      scale: {
+        105: "1.05",
       },
 
+      keyframes: {
+        cartSlideIn: {
+          "0%": { transform: "translateX(-200%)", opacity: 0 },
+          "50%": { opacity: 1 },
+          "100%": { transform: "translateX(0)", opacity: 1 },
+        },
+      },
+      animation: {
+        "cart-slide-in": "cartSlideIn 1.2s ease-out",
+      },
+
+      screens: {
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px',
+      },
+      animation: {
+        'slide-down': 'slide-down 0.5s ease-out forwards',
+        'fade-in': 'fadeIn 0.5s ease-out',
+      },
+      keyframes: {
+        'slide-down': {
+          '0%': { transform: 'translateY(-50px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+      },
+    
 
     },
   },

@@ -10,10 +10,12 @@ import store from './store/store';
 import AdminRoutes from './Routing/AdminRoutes';
 import ChatSupport from './pages/Chat/Chat';
 
+
 const App = () => {
   return (
     <Provider store={store}>
       <Router>
+       
         <CartProvider>
           <Routes>
             <Route path="/admin/*" element={<AdminRoutes />} />
@@ -25,12 +27,13 @@ const App = () => {
                   <AppRoutes />
                   <FeaturesSection />
                   <Footer />
-                  <ChatSupport />
+                  {/* <ChatSupport /> */}
                 </>
               } 
             />
           </Routes>
         </CartProvider>
+      
       </Router>
     </Provider>
   );

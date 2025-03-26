@@ -1,35 +1,33 @@
-import React from 'react'
-import { Logo } from '../assets/images'
-import { footerLinks } from '../data'
+import React from "react";
+import { Logo } from "../assets/images";
+import { footerLinks } from "../data";
 
 const Footer = () => {
   return (
-    <footer className='bg-white py-10 px-8 font-poppins'>
-      <div className='flex justify-between gap-10 items-start flex-wrap max-lg:flex-col'>
+    <footer className="bg-white py-10 px-8 font-poppins">
+      <div className="flex justify-between gap-10 items-start flex-wrap max-lg:flex-col">
         {/* Logo Section */}
-        <div className='flex flex-col items-start mb-8'>
-          <a href='/'>
-            <img src={Logo} width={140} height={40} alt='Lyros Logo' />
+        <div className="flex flex-col items-start mb-8">
+          <a href="/">
+            <img src={Logo} width={140} height={40} alt="Lyros Logo" />
           </a>
-          <address className='mt-4 text-custom-16 text-steelGray font-400'>
-
-            
+          <address className="mt-4 text-custom-16 text-steelGray font-400">
             Q-4, A2, 10th Floor, Cyber <br />
             Towers, Hitech City, Hyderabad, <br />
-             Telangana, India - 500081  <br />
+            Telangana, India - 500081 <br />
           </address>
         </div>
 
         {/* Links Section */}
-        <div className='flex flex-wrap gap-20'>
+        <div className="flex flex-wrap gap-20">
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h5 className='text-custom-16 text-steelGray font-medium mb-3'>
+              <h5 className="text-custom-16 text-steelGray font-medium mb-3">
                 {section.title}
               </h5>
-              <ul className='space-y-7'> 
+              <ul className="space-y-7">
                 {section.links.map((link) => (
-                  <li key={link.name} className='mb-2'>
+                  <li key={link.name} className="mb-2">
                     {link.name === "SUBSCRIBE" ? (
                       <div className="flex items-center">
                         <input
@@ -42,7 +40,7 @@ const Footer = () => {
                         </button>
                       </div>
                     ) : (
-                      <a href={link.link} className='hover:text-gray-800'>
+                      <a href={link.link} className="hover:text-gray-800">
                         {link.name}
                       </a>
                     )}
@@ -55,11 +53,11 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className='mt-8 text-sm text-gray-600'>
+      <div className="mt-8 text-sm text-gray-600">
         2024 by Lyros Technologies PVT LTD.
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

@@ -4,3 +4,102 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+}
+
+
+
+@keyframes slide-in {
+    0% {
+      transform: translateX(100%); /* Start off-screen to the right */
+      opacity: 0;                /* Invisible */
+    }
+    40% {
+      transform: translateX(0);  /* Slide into view */
+      opacity: 1;                /* Fully visible */
+    }
+    100% {
+      transform: translateX(0);  /* Stay in position */
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fade-out {
+    0% {
+      opacity: 1; /* Fully visible */
+    }
+    100% {
+      opacity: 0; /* Fade out completely */
+    }
+  }
+  
+  /* Apply animations */
+  .animate-slide-in {
+    animation: slide-in 0.5s ease-out, fade-out 0.5s ease-in 3s forwards;
+  }
+
+
+
+
+  /* Swiper Arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-black text-lg;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  @apply text-orange-500;
+}
+
+.swiper-button-next {
+  @apply right-0;
+}
+
+.swiper-button-prev {
+  @apply left-0;
+}
+
+/* Optional spacing adjustments for mobile screens */
+@media (max-width: 640px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    @apply text-base; /* Smaller arrows for smaller screens */
+  }
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+.animate-slideInText {
+  animation: slideInFromBottom 1.5s ease-out forwards;
+}

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import AdminSideBar from '../../Admin/components/AdminSideBar';
 import AdminHeader from '../../Admin/components/AdminHeader';
 
-
 const AdminLayout = ({ children }) => {
     const [open, setOpen] = useState(false);
 
